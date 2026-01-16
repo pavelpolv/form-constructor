@@ -9,7 +9,11 @@
     "lint": "eslint src --ext .ts,.tsx",
     "type-check": "tsc --noEmit"
   },
-  "keywords": ["react", "forms", "constructor"],
+  "keywords": [
+    "react",
+    "forms",
+    "constructor"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -17,7 +21,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-jss": "^10.10.0",
-    "react-router-dom": "^6.28.0",
+    "react-router-dom": "^7.12.0",
     "uuid": "^11.0.3",
     "zustand": "^5.0.2"
   },
@@ -33,7 +37,7 @@
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "babel-loader": "^9.2.1",
-    "babel-plugin-react-compiler": "^19.0.0-beta-bb33cf5-20250103",
+    "babel-plugin-react-compiler": "^1.0.0",
     "css-loader": "^7.1.2",
     "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
