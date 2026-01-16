@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
-import type { FormStore, Form, Field, Group } from '../types';
+import type { FormStore, Field, Group } from '../types';
 import { generateMockData } from './mockData';
 
 const useFormStore = create<FormStore>((set) => ({
   forms: {},
   groups: {},
   fields: {},
+  templates: {},
 
   // Forms actions
   createForm: (название, системноеНазвание) => {
@@ -295,6 +296,68 @@ const useFormStore = create<FormStore>((set) => ({
         },
       },
     };
+  }),
+
+  // Field Templates actions
+  createTemplate: (данные) => {
+    const id = uuidv4();
+    const createdAt = Date.now();
+
+    set((state) => {
+      // Проверка уникальности названия
+      const existingTemplate = Object.values(state.templates).find(
+        (t) => t.названиеШаблона === данные.названиеШаблона
+      );
+
+      if (existingTemplate) {
+        console.error(`Шаблон с названием "${данные.названиеШаблона}" уже существует`);
+        return state;
+      }
+
+      return {
+        templates: {
+          ...state.templates,
+          [id]: {
+            id,
+            ...данные,
+            createdAt,
+          },
+        },
+      };
+    });
+
+    return id;
+  },
+
+  updateTemplate: (templateId, данные) => set((state) => {
+    // Если меняется название - проверить уникальность
+    if (данные.названиеШаблона) {
+      const existingTemplate = Object.values(state.templates).find(
+        (t) => t.id !== templateId && t.названиеШаблона === данные.названиеШаблона
+      );
+
+      if (existingTemplate) {
+        console.error(`Шаблон с названием "${данные.названиеШаблона}" уже существует`);
+        return state;
+      }
+    }
+
+    return {
+      templates: {
+        ...state.templates,
+        [templateId]: {
+          ...state.templates[templateId],
+          ...данные,
+        },
+      },
+    };
+  }),
+
+  deleteTemplate: (templateId) => set((state) => {
+    const newTemplates = { ...state.templates };
+    delete newTemplates[templateId];
+
+    return { templates: newTemplates };
   }),
 
   // Инициализация моковыми данными

@@ -42,6 +42,17 @@ export interface Field {
   зависимость?: RuleGroup | null;
 }
 
+export interface FieldTemplate {
+  id: string;
+  названиеШаблона: string;
+  лейбл: string;
+  name: string;
+  тип: FieldType;
+  свойства: FieldProperties;
+  валидация: FieldValidation;
+  createdAt: number;
+}
+
 export interface Group {
   id: string;
   название: string;
@@ -63,6 +74,7 @@ export interface FormStore {
   forms: Record<string, Form>;
   groups: Record<string, Group>;
   fields: Record<string, Field>;
+  templates: Record<string, FieldTemplate>;
 
   // Forms actions
   createForm: (название: string, системноеНазвание: string) => string;
@@ -88,6 +100,11 @@ export interface FormStore {
   deleteField: (fieldId: string) => void;
   moveFieldUp: (groupId: string, fieldId: string) => void;
   moveFieldDown: (groupId: string, fieldId: string) => void;
+
+  // Field Templates actions
+  createTemplate: (данные: Omit<FieldTemplate, 'id' | 'createdAt'>) => string;
+  updateTemplate: (templateId: string, данные: Partial<Omit<FieldTemplate, 'id' | 'createdAt'>>) => void;
+  deleteTemplate: (templateId: string) => void;
 
   // Initialize
   initMockData: () => void;

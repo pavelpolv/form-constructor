@@ -1,10 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { Form, Group, Field } from '../types';
+import type { Form, Group, Field, FieldTemplate } from '../types';
 
 interface MockData {
   forms: Record<string, Form>;
   groups: Record<string, Group>;
   fields: Record<string, Field>;
+  templates: Record<string, FieldTemplate>;
 }
 
 export const generateMockData = (): MockData => {
@@ -22,6 +23,13 @@ export const generateMockData = (): MockData => {
   const field5Id = uuidv4();
   const field6Id = uuidv4();
   const field7Id = uuidv4();
+
+  const template1Id = uuidv4();
+  const template2Id = uuidv4();
+  const template3Id = uuidv4();
+  const template4Id = uuidv4();
+  const template5Id = uuidv4();
+  const template6Id = uuidv4();
 
   return {
     forms: {
@@ -190,6 +198,108 @@ export const generateMockData = (): MockData => {
           required: true,
         },
         зависимость: null,
+      },
+    },
+
+    templates: {
+      [template1Id]: {
+        id: template1Id,
+        названиеШаблона: 'Email адрес',
+        лейбл: 'Email',
+        name: 'email',
+        тип: 'input',
+        свойства: {
+          placeholder: 'example@mail.com',
+          inputType: 'email',
+        },
+        валидация: {
+          required: true,
+          pattern: '^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
+        },
+        createdAt: Date.now() - 500000,
+      },
+      [template2Id]: {
+        id: template2Id,
+        названиеШаблона: 'Полное имя',
+        лейбл: 'ФИО',
+        name: 'full_name',
+        тип: 'input',
+        свойства: {
+          placeholder: 'Иванов Иван Иванович',
+          inputType: 'text',
+        },
+        валидация: {
+          required: true,
+          minLength: 5,
+          maxLength: 100,
+        },
+        createdAt: Date.now() - 400000,
+      },
+      [template3Id]: {
+        id: template3Id,
+        названиеШаблона: 'Номер телефона',
+        лейбл: 'Телефон',
+        name: 'phone',
+        тип: 'input',
+        свойства: {
+          placeholder: '+7 (999) 123-45-67',
+          inputType: 'text',
+        },
+        валидация: {
+          required: true,
+          pattern: '^\\+?[1-9]\\d{1,14}$',
+        },
+        createdAt: Date.now() - 300000,
+      },
+      [template4Id]: {
+        id: template4Id,
+        названиеШаблона: 'Описание/Комментарий',
+        лейбл: 'Комментарий',
+        name: 'comment',
+        тип: 'textarea',
+        свойства: {
+          placeholder: 'Введите ваш комментарий',
+          rows: 5,
+        },
+        валидация: {
+          maxLength: 1000,
+        },
+        createdAt: Date.now() - 200000,
+      },
+      [template5Id]: {
+        id: template5Id,
+        названиеШаблона: 'Согласие/Подтверждение',
+        лейбл: 'Я согласен с условиями',
+        name: 'agreement',
+        тип: 'switch',
+        свойства: {
+          defaultValue: false,
+        },
+        валидация: {
+          required: true,
+        },
+        createdAt: Date.now() - 100000,
+      },
+      [template6Id]: {
+        id: template6Id,
+        названиеШаблона: 'Выбор страны',
+        лейбл: 'Страна',
+        name: 'country',
+        тип: 'select',
+        свойства: {
+          options: [
+            { label: 'Россия', value: 'ru' },
+            { label: 'США', value: 'us' },
+            { label: 'Великобритания', value: 'gb' },
+            { label: 'Германия', value: 'de' },
+            { label: 'Франция', value: 'fr' },
+          ],
+          multiple: false,
+        },
+        валидация: {
+          required: true,
+        },
+        createdAt: Date.now(),
       },
     },
   };

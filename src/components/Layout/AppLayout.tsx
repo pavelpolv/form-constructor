@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
-import { FormOutlined } from '@ant-design/icons';
+import { FormOutlined, FileTextOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 
 const { Header, Sider, Content } = Layout;
@@ -16,6 +16,12 @@ const AppLayout = () => {
       icon: <FormOutlined />,
       label: 'Формы',
       onClick: () => navigate('/forms'),
+    },
+    {
+      key: 'field-templates',
+      icon: <FileTextOutlined />,
+      label: 'Шаблоны полей',
+      onClick: () => navigate('/field-templates'),
     },
   ];
 

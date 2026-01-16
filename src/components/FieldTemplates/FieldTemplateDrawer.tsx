@@ -11,28 +11,25 @@ import {
   Divider,
   Typography,
 } from 'antd';
-import { MinusCircleOutlined, PlusOutlined, FileTextOutlined } from '@ant-design/icons';
-import useFormStore from '../../../store/useFormStore';
-import { FIELD_TYPES } from '../../../constants/fieldTypes';
-import type { FieldType, SelectOption, RuleGroup } from '../../../types';
-import { RuleEditor } from '../../Rules';
-import SelectTemplateDrawer from './SelectTemplateDrawer';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import useFormStore from '../../store/useFormStore';
+import { FIELD_TYPES } from '../../constants/fieldTypes';
+import type { FieldType, SelectOption } from '../../types';
 
 const { Title } = Typography;
 const { Option } = Select;
 
-interface FieldDrawerProps {
-  groupId: string;
-  fieldId: string | null;
+interface FieldTemplateDrawerProps {
+  templateId: string | null;
   open: boolean;
   onClose: () => void;
 }
 
-interface FieldFormValues {
+interface TemplateFormValues {
+  названиеШаблона: string;
   тип: FieldType;
   лейбл: string;
   name: string;
-  системныйЛейбл?: string;
   required?: boolean;
   minLength?: number;
   maxLength?: number;
@@ -43,72 +40,57 @@ interface FieldFormValues {
   multiple?: boolean;
   rows?: number;
   defaultValue?: boolean;
-  зависимость?: RuleGroup | null;
 }
 
-const FieldDrawer = ({
-  groupId, fieldId, open, onClose,
-}: FieldDrawerProps) => {
-  const [form] = Form.useForm<FieldFormValues>();
+const FieldTemplateDrawer = ({ templateId, open, onClose }: FieldTemplateDrawerProps) => {
+  const [form] = Form.useForm<TemplateFormValues>();
   const [selectedType, setSelectedType] = useState<FieldType>('input');
-  const [templateDrawerOpen, setTemplateDrawerOpen] = useState(false);
 
-  const fields = useFormStore((state) => state.fields);
   const templates = useFormStore((state) => state.templates);
-  const createField = useFormStore((state) => state.createField);
-  const updateField = useFormStore((state) => state.updateField);
+  const createTemplate = useFormStore((state) => state.createTemplate);
+  const updateTemplate = useFormStore((state) => state.updateTemplate);
 
-  const field = fieldId ? fields[fieldId] : null;
-  const isEditing = Boolean(fieldId);
+  const template = templateId ? templates[templateId] : null;
+  const isEditing = Boolean(templateId);
 
   useEffect(() => {
     if (open) {
-      if (field) {
-        setSelectedType(field.тип);
+      if (template) {
+        setSelectedType(template.тип);
         form.setFieldsValue({
-          тип: field.тип,
-          лейбл: field.лейбл,
-          name: field.name,
-          системныйЛейбл: field.системныйЛейбл,
-          ...field.свойства,
-          ...field.валидация,
-          зависимость: field.зависимость || null,
+          названиеШаблона: template.названиеШаблона,
+          тип: template.тип,
+          лейбл: template.лейбл,
+          name: template.name,
+          ...template.свойства,
+          ...template.валидация,
         });
       } else {
         form.resetFields();
         setSelectedType('input');
       }
     }
-  }, [open, field, form]);
-
-  const handleApplyTemplate = (templateId: string) => {
-    const template = templates[templateId];
-    if (!template) return;
-
-    setSelectedType(template.тип);
-    form.setFieldsValue({
-      тип: template.тип,
-      лейбл: template.лейбл,
-      name: template.name,
-      ...template.свойства,
-      ...template.валидация,
-    });
-  };
+  }, [open, template, form]);
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
       const {
-        тип, лейбл, name, системныйЛейбл,
-        required, minLength, maxLength, pattern,
-        зависимость,
-        ...specificProps
-      } = values;
-
-      const fieldData = {
+        названиеШаблона,
         тип,
         лейбл,
         name,
-        системныйЛейбл: системныйЛейбл || '',
+        required,
+        minLength,
+        maxLength,
+        pattern,
+        ...specificProps
+      } = values;
+
+      const templateData = {
+        названиеШаблона,
+        тип,
+        лейбл,
+        name,
         свойства: specificProps,
         валидация: {
           ...(required !== undefined && { required }),
@@ -116,13 +98,12 @@ const FieldDrawer = ({
           ...(maxLength !== undefined && { maxLength }),
           ...(pattern && { pattern }),
         },
-        зависимость: зависимость || null,
       };
 
-      if (isEditing && fieldId) {
-        updateField(fieldId, fieldData);
+      if (isEditing && templateId) {
+        updateTemplate(templateId, templateData);
       } else {
-        createField(groupId, fieldData);
+        createTemplate(templateData);
       }
 
       form.resetFields();
@@ -146,10 +127,7 @@ const FieldDrawer = ({
             key={propKey}
             name={propKey}
             label={propConfig.label}
-            rules={[{
-              required: propConfig.required,
-              message: `Пожалуйста, введите ${propConfig.label}`,
-            }]}
+            rules={[{ required: propConfig.required, message: `Пожалуйста, введите ${propConfig.label}` }]}
           >
             <Input placeholder={`Введите ${propConfig.label}`} />
           </Form.Item>
@@ -245,28 +223,31 @@ const FieldDrawer = ({
 
   return (
     <Drawer
-      title={isEditing ? 'Редактирование поля' : 'Создание поля'}
+      title={isEditing ? 'Редактирование шаблона' : 'Создание шаблона'}
       open={open}
       onClose={handleCancel}
       width="50%"
       footer={
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Button
-            icon={<FileTextOutlined />}
-            onClick={() => setTemplateDrawerOpen(true)}
-          >
-            Заполнить из шаблона
+        <Space style={{ float: 'right' }}>
+          <Button onClick={handleCancel}>Отмена</Button>
+          <Button type="primary" onClick={handleSubmit}>
+            Сохранить
           </Button>
-          <Space>
-            <Button onClick={handleCancel}>Отмена</Button>
-            <Button type="primary" onClick={handleSubmit}>
-              Сохранить
-            </Button>
-          </Space>
-        </div>
+        </Space>
       }
     >
       <Form form={form} layout="vertical">
+        <Title level={5}>Название шаблона</Title>
+        <Form.Item
+          name="названиеШаблона"
+          label="Название шаблона"
+          rules={[{ required: true, message: 'Пожалуйста, введите название шаблона' }]}
+        >
+          <Input placeholder="Введите уникальное название шаблона" />
+        </Form.Item>
+
+        <Divider />
+
         <Title level={5}>Выбор типа поля</Title>
         <Form.Item
           name="тип"
@@ -302,10 +283,6 @@ const FieldDrawer = ({
           <Input placeholder="Введите name" />
         </Form.Item>
 
-        <Form.Item name="системныйЛейбл" label="Системный лейбл">
-          <Input placeholder="Введите системный лейбл" />
-        </Form.Item>
-
         <Divider />
 
         <Title level={5}>Специфичные свойства</Title>
@@ -329,25 +306,9 @@ const FieldDrawer = ({
         <Form.Item name="pattern" label="Паттерн (регулярное выражение)">
           <Input placeholder="Введите регулярное выражение" />
         </Form.Item>
-
-        <Divider />
-
-        <Title level={5}>Зависимость</Title>
-        <Form.Item name="зависимость">
-          <RuleEditor
-            value={form.getFieldValue('зависимость')}
-            onChange={(value) => form.setFieldsValue({ зависимость: value })}
-          />
-        </Form.Item>
       </Form>
-
-      <SelectTemplateDrawer
-        open={templateDrawerOpen}
-        onClose={() => setTemplateDrawerOpen(false)}
-        onSelectTemplate={handleApplyTemplate}
-      />
     </Drawer>
   );
 };
 
-export default FieldDrawer;
+export default FieldTemplateDrawer;
