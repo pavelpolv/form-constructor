@@ -17,7 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "antd": "^5.22.5",
+    "antd": "^6.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-jss": "^10.10.0",
