@@ -32,7 +32,6 @@ const CreateFormDrawer = ({ open, onClose, onCreate }: CreateFormDrawerProps) =>
       title="Создание формы"
       open={open}
       onClose={handleCancel}
-      width="50%"
       footer={
         <Space style={{ float: 'right' }}>
           <Button onClick={handleCancel}>Отмена</Button>
